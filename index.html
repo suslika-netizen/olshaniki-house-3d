@@ -1891,17 +1891,14 @@ el(-2.405, .75, .85, .4, .08, .58, mt(0xfbfaf7, { roughness: .25 })); el(-2.405,
  }
 }
 
-// UPPER_STAIR_GUARD: added on confirmed slab edge; top stair exit remains unobstructed.
-{
- const guard=new THREE.Group();guard.name='upper-stair-guard';F2.add(guard);
- const wood=mt(0x7a5233,{roughness:.5}),wh=mt(0xf4f1ea);
- const x=.491933,a=3.775968,b=6.923468,floor=3.1;
- const box=(w,h,d,px,py,pz,m)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);mesh.position.set(px,py,pz);mesh.castShadow=mesh.receiveShadow=true;guard.add(mesh);};
- for(const z of [a,b]){box(.09,1.05,.09,x,floor+.525,z,wood);box(.105,.025,.105,x,floor+1.0625,z,wood);}
- box(.06,.065,b-a,x,floor+1.0175,(a+b)/2,wood);
- for(let i=1;i<=29;i++){const z=a+(b-a)*i/30;box(.036,.985,.036,x,floor+.4925,z,wh);}
-}
-
+// UPPER_VERTICAL_SCREEN_PREVIEW: visual proposal only, not a safety specification.
+{const screen=new THREE.Group();screen.name='upper-vertical-screen';F2.add(screen);
+const wood=mt(0x7a5233,{roughness:.48}),x=.514933,floor=3.1,a=3.775968,b=6.923468,N=25;
+const ceiling=z=>6.596747398376465+(4.309067726135254-6.596747398376465)/(7.183467864990234-2.8809680938720703)*(z-2.8809680938720703);
+for(let i=0;i<N;i++){const z=a+.015+(b-a-.03)*i/(N-1);const g=new THREE.BoxGeometry(.15,1,.03),pos=g.attributes.position;
+for(let j=0;j<pos.count;j++)pos.setY(j,pos.getY(j)>0?ceiling(z+pos.getZ(j))-floor-.003:0);
+g.computeVertexNormals();const m=new THREE.Mesh(g,wood);m.position.set(x,floor,z);m.name='screenSlat_'+i;m.castShadow=m.receiveShadow=true;screen.add(m);}
+screen.userData={visualOnly:true,sectionMM:[150,30],slats:N,clearGapMM:((b-a-.03)/(N-1)-.03)*1000,exitOpen:true};}
 // LOWER_BALUSTER_HANDRAIL
 {
  const wood=new THREE.MeshStandardMaterial({color:new THREE.Color(0x7a5233).convertSRGBToLinear(),roughness:.5});
