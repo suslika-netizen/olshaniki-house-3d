@@ -2329,4 +2329,29 @@ screen.userData={visualOnly:true,sectionMM:[150,30],slats:N,clearGapMM:((b-a-.03
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute([0,1,2,0,2,3].flatMap(i=>p[i]),3));g.computeVertexNormals();const cap=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0xf1ece2,roughness:.58,side:THREE.DoubleSide}));group.add(cap);
 }
 
+// SAUNA5275_MEASURED_WOOD_FINISH_V1 — original glass, timber leaf and box untouched.
+// IFC opening710x2000; mesh9 contour z3.950968..4.660968,y.1..2.1.
+// Actual extreme host faces x-2.345567 / -2.050567:295mm full wall assembly.
+{
+ const name='Sauna5275WoodFinish';if(F1.getObjectByName(name))throw Error('Duplicate '+name);
+ const g=new THREE.Group();g.name=name;F1.add(g);
+ // Same source linearised colour as existing frame mesh11(c:[.7,.64,.54]), not white.
+ const m=patch(new THREE.MeshStandardMaterial({color:new THREE.Color(.7,.64,.54).convertSRGBToLinear(),roughness:.62}),null,false);
+ m.customProgramCacheKey=()=>name;
+ const W=(u,v,h)=>new THREE.Vector3(-2.195567262978394+v/1000,.1+h/1000,3.970968103408071+u/1000);
+ const B=(u0,u1,v0,v1,h0,h1,label)=>{
+  if(!(u1>u0&&v1>v0&&h1>h0))throw Error('Invalid sauna panel');
+  const o=new THREE.Mesh(new THREE.BoxGeometry((v1-v0)/1000,(h1-h0)/1000,(u1-u0)/1000),m);
+  o.position.copy(W((u0+u1)/2,(v0+v1)/2,(h0+h1)/2));o.name=name+'_'+label;o.castShadow=o.receiveShadow=true;g.add(o);
+ };
+ // Conceal20mm installation gaps without intruding into the original frame opening.
+ B(-20,0,-150,145,0,2000,'leftPacking');B(670,690,-150,145,0,2000,'rightPacking');B(0,670,-150,145,1980,2000,'headPacking');
+ // From the original box rear plane(v30) to the actual rear wall face(v-150).
+ B(20,40,-150,30,0,1940,'leftExtension');B(630,650,-150,30,0,1940,'rightExtension');B(20,650,-150,30,1940,1960,'headExtension');
+ for(const [v0,v1,s] of [[-168,-150,'rear'],[145,163,'front']]){
+  B(-50,20,v0,v1,0,2030,s+'LeftCasing');B(650,720,v0,v1,0,2030,s+'RightCasing');B(20,650,v0,v1,1960,2030,s+'HeadCasing');
+ }
+ g.userData.qa={front:[-.9,1.25,4.305968],rear:[-3.5,1.25,4.305968],target:[-2.195567,1.1,4.305968]};
+}
+
 start();</script></body></html>
