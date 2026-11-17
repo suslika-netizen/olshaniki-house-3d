@@ -1543,15 +1543,46 @@ const night = (x0, y0) => { bx(x0, y0, x0 + .42, y0 + .45, .12, .52, white); for
     for (let q = 1; q < 5; q++) { const z = .2 + (hd - s - .2) * q / 5; bx(a + s, y0 + .006, b - s, y1 - .006, z - .011, z + .011, W); }
     if (k === 1 || k === 2) bx(k === 1 ? b - .03 : a + .015, y1, k === 1 ? b - .015 : a + .03, y1 + .025, .95, 1.25, brass); }
   bx(X0 + f, yc - .004, X1 - f, yc + .004, hd + .06, ht - f, glassM); for (let k = 1; k < 8; k++) { const x = X0 + f + (X1 - X0 - 2 * f) * k / 8; bx(x - .011, yc - .015, x + .011, yc + .015, hd + .06, ht - f, W); } }
+// BEDROOM_SOFT_HEADBOARD_WIDE_NIGHTSTANDS_V1
 { const cx = 2.39, yh = 1.08, wh = mt(0xf6f2ea, { roughness: 1 });
+  // Original bed base, mattress, blanket and pillows: dimensions and position unchanged.
   bx(cx - .82, yh - 2.02, cx + .82, yh - .02, .1, .3, cream); rb(cx - .8, yh - 2.0, cx + .8, yh - .04, .3, .56, .08, wh); rb(cx - .84, yh - 2.04, cx + .84, yh - .75, .5, .62, .06, linenD);
   for (const x of [cx - .72, cx + .06]) rb(x, yh - .62, x + .66, yh - .12, .54, .72, .1, white);
-  for (const x of [cx - .84, cx + .81]) { bx(x, yh - .03, x + .03, yh, 0, 1.0, iron); const k = new THREE.Mesh(new THREE.SphereGeometry(.035, 12, 8), brass); k.position.set(x + .015, BASE + 1.03, -(yh - .015)); CUR.add(k); }
-  bx(cx - .82, yh - .025, cx + .82, yh - .005, .55, .575, iron);
-  const arch = new THREE.Mesh(new THREE.TorusGeometry(.815, .013, 8, 40, Math.PI), iron); arch.scale.y = .42; arch.position.set(cx, BASE + .98, -(yh - .015)); CUR.add(arch);
-  for (let k = -5; k <= 5; k++) { const dx = k * .135, top = .98 + .34 * Math.sqrt(Math.max(0, 1 - (dx / .815) ** 2)); bx(cx + dx - .007, yh - .022, cx + dx + .007, yh - .008, .575, top, iron); if (k % 2) { const r = new THREE.Mesh(new THREE.TorusGeometry(.05, .007, 6, 16), iron); r.position.set(cx + dx + .0675, BASE + .8, -(yh - .015)); CUR.add(r); } }
-  night(cx - 1.32, yh - .55); night(cx + .9, yh - .55); bx(cx - 1.2, yh - 2.5, cx + 1.2, yh - .8, 0, .012, mt(0xd9d2c4, { roughness: 1 })); }
-bx(4.5, -1.5, 5.05, -.3, 0, .85, white); bx(4.48, -1.52, 5.07, -.28, .85, .88, oak);
+  // Soft upholstered headboard within original overall bed width/depth; no metal arch.
+  const upholstery=mt(0xcfc3b2,{roughness:1});
+  rb(cx-.84,yh-.12,cx+.84,yh,.18,1.25,.06,upholstery);
+  // Two restrained upholstered inset panels, rounded not rigid ironwork.
+  for(const x of [cx-.81,cx+.015])rb(x,yh-.128,x+.795,yh-.11,.49,1.215,.035,upholstery);
+  // 700mm along the wall x400mm deep. Inner edges retained, widening outward only.
+  for(const x of [cx-1.60,cx+.90]){
+    rb(x,yh-.50,x+.70,yh-.10,.10,.55,.015,white);
+    bx(x+.035,yh-.465,x+.665,yh-.135,.035,.10,oak);
+    for(const h of [.125,.335]){
+      bx(x+.012,yh-.505,x+.688,yh-.49,h,h+.195,cream);
+      bx(x+.29,yh-.522,x+.41,yh-.505,h+.09,h+.105,brass);
+    }
+    rb(x-.005,yh-.505,x+.705,yh-.095,.55,.575,.012,white);
+    // Large ceramic lamps, 340mm shades, height610mm above tabletop.
+    const lx=x+.35,ly=yh-.30;
+    cy(lx,ly,.09,.575,.60,brass);
+    el(lx,ly,.105,.105,.60,.855,mt(0xc8bca5,{roughness:.54}));
+    cy(lx,ly,.018,.81,.91,brass);
+    cy(lx,ly,.17,.88,1.185,linen,.115);
+    cy(lx,ly,.025,1.185,1.205,brass);
+  }
+  // Larger rug3400x2300, does not cross the glass doorway; no architecture changed.
+  rb(cx-1.70,-1.70,cx+1.70,.60,.001,.014,.02,mt(0xd9d2c4,{roughness:1}));
+}
+// MASTER_DRESSER_1400: chosen B, closed drawers40+60+40cm; low shallow1400x400x650.
+{const burgundy=mt(0x713c48,{roughness:.55}),dark=mt(0x482a32,{roughness:.6});
+ bx(4.65,-1.60,5.05,-.20,.10,.62,burgundy);bx(4.64,-1.61,5.06,-.19,.62,.65,burgundy);
+ for(const x of [4.68,4.98])for(const y of [-1.55,-.29])bx(x,y,x+.045,y+.045,0,.10,dark);
+ for(const [a,b]of [[-1.60,-1.20],[-1.20,-.60],[-.60,-.20]])for(const [lo,hi]of [[.105,.36],[.365,.615]]){
+  bx(4.63,a+.006,4.65,b-.006,lo,hi,burgundy);
+  bx(4.619,(a+b)/2-.055,4.63,(a+b)/2+.055,lo+.158,lo+.168,brass);
+ }
+}
+
 // холл 2 этажа, под скатом напротив спальни: полки с книгами и встроенный ТВ
 { const W = mt(0xf3efe7), bk = [0x7a5233, 0x2f4a5f, 0xb9ae99, 0x8a3b2e, 0x4f6b52, 0xd8cfc0, 0x3a3836];
   bx(.6, -7.0, 3.9, -6.62, 0, .06, W); bx(.6, -7.0, 3.9, -6.62, 1.24, 1.28, W); bx(.6, -7.0, 3.9, -6.97, .06, 1.24, W);
@@ -2250,6 +2281,52 @@ screen.userData={visualOnly:true,sectionMM:[150,30],slats:N,clearGapMM:((b-a-.03
  const casing=new THREE.Mesh(new THREE.BoxGeometry(1.12,.63,.032),steelM);tv.add(casing);
  const screen=new THREE.Mesh(new THREE.PlaneGeometry(1.092,.602),new THREE.MeshStandardMaterial({color:0x20282b,roughness:.22,metalness:.12}));screen.rotation.y=Math.PI;screen.position.z=-.017;tv.add(screen);
  g.userData.concept='Visual articulating bracket; hardware, load rating and fixing remain unspecified.';
+}
+
+// MASTER_WEST_WARDROBE_CONCEPT: separate furniture, no architecture edits.
+{
+ const group=new THREE.Group();group.name='MasterWestWardrobeConcept';F2.add(group);
+ const paint=new THREE.MeshStandardMaterial({color:0xf1ece2,roughness:.58});
+ const inset=new THREE.MeshStandardMaterial({color:0xe3ddd2,roughness:.65});
+ const metal=new THREE.MeshStandardMaterial({color:0x85633d,roughness:.36,metalness:.68});
+ const x0=-.563067+.006,xf=.036933,z0=-1.18,z1=1.92,floor=3.1;
+ const roof=z=>4.309067726135254+(6.252465724945068-4.309067726135254)/(2.2334680557250977+1.4215319156646729)*(z+1.4215319156646729);
+ const top=z=>roof(z)-.018;
+ function B(a,b,c,d,e,f,mat=paint){const m=new THREE.Mesh(new THREE.BoxGeometry(b-a,d-c,f-e),mat);m.position.set((a+b)/2,(c+d)/2,(e+f)/2);m.castShadow=m.receiveShadow=true;group.add(m);return m;}
+ function prism(a,b,c,d,low,high0,high1,mat=paint){
+  const p=[[a,low,c],[b,low,c],[b,low,d],[a,low,d],[a,high0,c],[b,high0,c],[b,high1,d],[a,high1,d]];
+  const faces=[[0,2,1],[0,3,2],[4,5,6],[4,6,7],[0,1,5],[0,5,4],[3,7,6],[3,6,2],[0,4,7],[0,7,3],[1,2,6],[1,6,5]];
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(faces.flatMap(t=>t.flatMap(i=>p[i])),3));g.computeVertexNormals();const m=new THREE.Mesh(g,mat);m.castShadow=m.receiveShadow=true;group.add(m);return m;
+ }
+ // Solid back, side divisions and sloping top all stop18mm below the measured roof underside.
+ prism(x0,x0+.018,z0,z1,floor+.06,top(z0),top(z1));
+ // Existing low beam stays intact:5mm-clearance notch in base and plinth of the first compartment.
+ function notchedBase(a,b,h0,h1,c,d){const l=-.290567254,r=-.075567263,end=-1.064027185;B(a,l,h0,h1,c,d);B(r,b,h0,h1,c,d);B(l,r,h0,h1,Math.max(c,end),d);}
+ notchedBase(x0,xf-.028,floor+.06,floor+.09,z0,z1);notchedBase(x0+.025,xf-.035,floor+.008,floor+.06,z0+.02,z1-.02);
+ const pitch=(z1-z0)/6;
+ for(let k=0;k<=6;k++){const z=z0+k*pitch,a=Math.max(z0,z-.009),b=Math.min(z1,z+.009);prism(x0,xf-.026,a,b,floor+.06,top(a),top(b));}
+ // Six rectangular doors of increasing height; fixed wedge infills above, not sloped moving leaves.
+ for(let k=0;k<6;k++){
+  const a=z0+k*pitch+.004,b=z0+(k+1)*pitch-.004,lo=floor+.075,hi=top(a)-.085;
+  B(xf-.032,xf-.021,lo,hi,a,b,inset);
+  const w=.062;
+  B(xf-.032,xf,lo,hi,a,a+w);B(xf-.032,xf,lo,hi,b-w,b);
+  B(xf-.032,xf,lo,lo+w,a,b);B(xf-.032,xf,hi-w,hi,a,b);
+  const split=lo+(hi-lo)*.40;B(xf-.032,xf,split-.025,split+.025,a,b);
+  // Deep stepped panel profiles: proud frame, narrow inner bevel, recessed field.
+  for(const [v,t] of [[lo+w+.008,split-.034],[split+.034,hi-w-.008]]){
+   B(xf-.020,xf-.006,v,t,a+w,a+w+.012);B(xf-.020,xf-.006,v,t,b-w-.012,b-w);
+   B(xf-.020,xf-.006,v,v+.012,a+w,b-w);B(xf-.020,xf-.006,t-.012,t,a+w,b-w);
+  }
+  const hz=k%2===0?b-.035:a+.035,hy=Math.min(lo+.91,hi-.14);
+  B(xf,xf+.017,hy-.065,hy+.065,hz-.007,hz+.007,metal);
+  prism(xf-.027,xf,a,b,hi+.004,top(a),top(b));
+  // Slim horizontal transom line distinguishes the fixed infill from its rectangular leaf.
+  B(xf-.027,xf,hi+.004,hi+.022,a,b);
+ }
+ // Thin sloped top panel, generated with the same measured roof plane.
+ const p=[[x0,top(z0)-.018,z0],[xf,top(z0)-.018,z0],[xf,top(z1)-.018,z1],[x0,top(z1)-.018,z1]];
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute([0,1,2,0,2,3].flatMap(i=>p[i]),3));g.computeVertexNormals();const cap=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0xf1ece2,roughness:.58,side:THREE.DoubleSide}));group.add(cap);
 }
 
 start();</script></body></html>
