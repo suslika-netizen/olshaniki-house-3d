@@ -1555,13 +1555,13 @@ const night = (x0, y0) => { bx(x0, y0, x0 + .42, y0 + .45, .12, .52, white); for
   for(const x of [cx-.81,cx+.015])rb(x,yh-.128,x+.795,yh-.11,.49,1.215,.035,upholstery);
   // 700mm along the wall x400mm deep. Inner edges retained, widening outward only.
   for(const x of [cx-1.60,cx+.90]){
-    rb(x,yh-.50,x+.70,yh-.10,.10,.55,.015,white);
-    bx(x+.035,yh-.465,x+.665,yh-.135,.035,.10,oak);
+    rb(x,yh-.50,x+.70,yh-.10,.10,.55,.015,oakD);
+    bx(x+.035,yh-.465,x+.665,yh-.135,.035,.10,oakD);
     for(const h of [.125,.335]){
-      bx(x+.012,yh-.505,x+.688,yh-.49,h,h+.195,cream);
+      bx(x+.012,yh-.505,x+.688,yh-.49,h,h+.195,oakD);
       bx(x+.29,yh-.522,x+.41,yh-.505,h+.09,h+.105,brass);
     }
-    rb(x-.005,yh-.505,x+.705,yh-.095,.55,.575,.012,white);
+    rb(x-.005,yh-.505,x+.705,yh-.095,.55,.575,.012,oakD);
     // Large ceramic lamps, 340mm shades, height610mm above tabletop.
     const lx=x+.35,ly=yh-.30;
     cy(lx,ly,.09,.575,.60,brass);
@@ -1573,13 +1573,13 @@ const night = (x0, y0) => { bx(x0, y0, x0 + .42, y0 + .45, .12, .52, white); for
   // Larger rug3400x2300, does not cross the glass doorway; no architecture changed.
   rb(cx-1.70,-1.70,cx+1.70,.60,.001,.014,.02,mt(0xd9d2c4,{roughness:1}));
 }
-// MASTER_DRESSER_1400: chosen B, closed drawers40+60+40cm; low shallow1400x400x650.
+// MASTER_DRESSER_1400:40+60+40 closed drawers,1400x350x650, bedside corner of window wall.
 {const burgundy=mt(0x713c48,{roughness:.55}),dark=mt(0x482a32,{roughness:.6});
- bx(4.65,-1.60,5.05,-.20,.10,.62,burgundy);bx(4.64,-1.61,5.06,-.19,.62,.65,burgundy);
- for(const x of [4.68,4.98])for(const y of [-1.55,-.29])bx(x,y,x+.045,y+.045,0,.10,dark);
- for(const [a,b]of [[-1.60,-1.20],[-1.20,-.60],[-.60,-.20]])for(const [lo,hi]of [[.105,.36],[.365,.615]]){
-  bx(4.63,a+.006,4.65,b-.006,lo,hi,burgundy);
-  bx(4.619,(a+b)/2-.055,4.63,(a+b)/2+.055,lo+.158,lo+.168,brass);
+ bx(4.72,-.23,5.05,1.17,.10,.62,burgundy);bx(4.71,-.24,5.06,1.18,.62,.65,burgundy);
+ for(const x of [4.74,4.98])for(const y of [-.18,1.08])bx(x,y,x+.045,y+.045,0,.10,dark);
+ for(const [a,b]of [[-.23,.17],[.17,.77],[.77,1.17]])for(const [lo,hi]of [[.105,.36],[.365,.615]]){
+  bx(4.70,a+.006,4.72,b-.006,lo,hi,burgundy);
+  bx(4.689,(a+b)/2-.055,4.70,(a+b)/2+.055,lo+.158,lo+.168,brass);
  }
 }
 
@@ -2305,24 +2305,30 @@ screen.userData={visualOnly:true,sectionMM:[150,30],slats:N,clearGapMM:((b-a-.03
  notchedBase(x0,xf-.028,floor+.06,floor+.09,z0,z1);notchedBase(x0+.025,xf-.035,floor+.008,floor+.06,z0+.02,z1-.02);
  const pitch=(z1-z0)/6;
  for(let k=0;k<=6;k++){const z=z0+k*pitch,a=Math.max(z0,z-.009),b=Math.min(z1,z+.009);prism(x0,xf-.026,a,b,floor+.06,top(a),top(b));}
- // Six rectangular doors of increasing height; fixed wedge infills above, not sloped moving leaves.
+ // SLOPED_MASTER_FACADES: visible upper edges follow measured roof, not stepped rectangles.
+ function band(a,b,c,d,l0,l1,h0,h1,mat=paint){
+  const p=[[a,l0,c],[b,l0,c],[b,l1,d],[a,l1,d],[a,h0,c],[b,h0,c],[b,h1,d],[a,h1,d]];
+  const f=[0,2,1,0,3,2,4,5,6,4,6,7,0,1,5,0,5,4,1,2,6,1,6,5,2,3,7,2,7,6,3,0,4,3,4,7];
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(f.flatMap(i=>p[i]),3));geo.computeVertexNormals();const m=new THREE.Mesh(geo,mat);m.castShadow=m.receiveShadow=true;group.add(m);return m;
+ }
  for(let k=0;k<6;k++){
-  const a=z0+k*pitch+.004,b=z0+(k+1)*pitch-.004,lo=floor+.075,hi=top(a)-.085;
-  B(xf-.032,xf-.021,lo,hi,a,b,inset);
-  const w=.062;
-  B(xf-.032,xf,lo,hi,a,a+w);B(xf-.032,xf,lo,hi,b-w,b);
-  B(xf-.032,xf,lo,lo+w,a,b);B(xf-.032,xf,hi-w,hi,a,b);
-  const split=lo+(hi-lo)*.40;B(xf-.032,xf,split-.025,split+.025,a,b);
-  // Deep stepped panel profiles: proud frame, narrow inner bevel, recessed field.
-  for(const [v,t] of [[lo+w+.008,split-.034],[split+.034,hi-w-.008]]){
-   B(xf-.020,xf-.006,v,t,a+w,a+w+.012);B(xf-.020,xf-.006,v,t,b-w-.012,b-w);
-   B(xf-.020,xf-.006,v,v+.012,a+w,b-w);B(xf-.020,xf-.006,t-.012,t,a+w,b-w);
+  const a=z0+k*pitch+.004,b=z0+(k+1)*pitch-.004,lo=floor+.075,w=.062,T=z=>top(z)-.008;
+  prism(xf-.032,xf-.021,a,b,lo,T(a),T(b),inset);
+  prism(xf-.032,xf,a,a+w,lo,T(a),T(a+w));prism(xf-.032,xf,b-w,b,lo,T(b-w),T(b));
+  B(xf-.032,xf,lo,lo+w,a,b);
+  band(xf-.032,xf,a,b,T(a)-w,T(b)-w,T(a),T(b));
+  const split=lo+(T(a)-lo)*.40;B(xf-.032,xf,split-.025,split+.025,a,b);
+  // Crisp stepped profiles: rectangular lower panel and trapezoidal upper panel.
+  const ia=a+w+.009,ib=b-w-.009;
+  for(const [low,upper] of [[lo+w+.008,split-.034],[split+.034,null]]){
+   const hi=z=>upper===null?T(z)-w-.009:upper;
+   B(xf-.020,xf-.006,low,low+.012,ia,ib);
+   band(xf-.020,xf-.006,ia,ib,hi(ia)-.012,hi(ib)-.012,hi(ia),hi(ib));
+   prism(xf-.020,xf-.006,ia,ia+.012,low,hi(ia),hi(ia+.012));prism(xf-.020,xf-.006,ib-.012,ib,low,hi(ib-.012),hi(ib));
   }
-  const hz=k%2===0?b-.035:a+.035,hy=Math.min(lo+.91,hi-.14);
+  const hz=k%2===0?b-.035:a+.035,hy=Math.min(lo+.91,split-.10);
   B(xf,xf+.017,hy-.065,hy+.065,hz-.007,hz+.007,metal);
-  prism(xf-.027,xf,a,b,hi+.004,top(a),top(b));
-  // Slim horizontal transom line distinguishes the fixed infill from its rectangular leaf.
-  B(xf-.027,xf,hi+.004,hi+.022,a,b);
+  if(k===0)group.userData.firstSection='Upper panel fixed, continuous facade appearance; opening hardware undecided';
  }
  // Thin sloped top panel, generated with the same measured roof plane.
  const p=[[x0,top(z0)-.018,z0],[xf,top(z0)-.018,z0],[xf,top(z1)-.018,z1],[x0,top(z1)-.018,z1]];
@@ -2352,6 +2358,38 @@ screen.userData={visualOnly:true,sectionMM:[150,30],slats:N,clearGapMM:((b-a-.03
   B(-50,20,v0,v1,0,2030,s+'LeftCasing');B(650,720,v0,v1,0,2030,s+'RightCasing');B(20,650,v0,v1,1960,2030,s+'HeadCasing');
  }
  g.userData.qa={front:[-.9,1.25,4.305968],rear:[-3.5,1.25,4.305968],target:[-2.195567,1.1,4.305968]};
+}
+
+// MASTER_FLOATING_FLUTED_CONSOLE: user replacement, window-side pier only.
+{
+ const oc=CUR,ob=BASE;const g=new THREE.Group();g.name='MasterFloatingConsole';F2.add(g);CUR=g;BASE=3.1;
+ const cx=4.62,front=1.680968,back=1.946,w=.76;
+ const whitePaint=mt(0xf3f0e8,{roughness:.48}),shadeWhite=mt(0xd9d6ce,{roughness:.62});
+ // 150mm projection beyond verified pier face1.830968, not150mm total depth.
+ rb(cx-w/2,-back,cx+w/2,-front,.59,.75,.018,whitePaint);
+ // Single handleless drawer, fine continuous shadow reveal.
+ bx(cx-w/2+.018,-front-.002,cx+w/2-.018,-front+.006,.60,.724,shadeWhite);
+ bx(cx-w/2+.022,-front+.004,cx+w/2-.022,-front+.014,.604,.720,whitePaint);
+ for(let i=0;i<42;i++){
+  const x=cx-w/2+.028+i*(w-.056)/41;
+  cy(x,-front+.020,.0065,.606,.718,whitePaint);
+ }
+ // Tall backlit mirror: bottom follows first visible timber seam179mm above floor.
+ const lo=.179,hi=1.919,mw=.74,r=.035;
+ const shape=(ww,hh,rr)=>{const q=new THREE.Shape(),x=-ww/2,y=-hh/2;q.moveTo(x+rr,y);q.lineTo(x+ww-rr,y);q.quadraticCurveTo(x+ww,y,x+ww,y+rr);q.lineTo(x+ww,y+hh-rr);q.quadraticCurveTo(x+ww,y+hh,x+ww-rr,y+hh);q.lineTo(x+rr,y+hh);q.quadraticCurveTo(x,y+hh,x,y+hh-rr);q.lineTo(x,y+rr);q.quadraticCurveTo(x,y,x+rr,y);return q;};
+ const luminous=new THREE.MeshBasicMaterial({color:0xffedcf,side:THREE.DoubleSide});
+ const glow=new THREE.Mesh(new THREE.ShapeGeometry(shape(mw+.038,hi-lo+.038,r+.019)),luminous);glow.rotation.y=Math.PI;glow.position.set(cx,BASE+(hi+lo)/2,1.938);CUR.add(glow);
+ const canvas=document.createElement('canvas');canvas.width=128;canvas.height=512;const ctx=canvas.getContext('2d'),grad=ctx.createLinearGradient(0,512,128,0);grad.addColorStop(0,'#88969a');grad.addColorStop(.48,'#c5d0d0');grad.addColorStop(1,'#edf0e8');ctx.fillStyle=grad;ctx.fillRect(0,0,128,512);const tex=new THREE.CanvasTexture(canvas);tex.encoding=THREE.sRGBEncoding;
+ const geom=new THREE.ShapeGeometry(shape(mw,hi-lo,r));const uv=geom.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,(uv.getX(i)+mw/2)/mw,(uv.getY(i)+(hi-lo)/2)/(hi-lo));
+ const mirror=new THREE.Mesh(geom,new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));mirror.rotation.y=Math.PI;mirror.position.set(cx,BASE+(hi+lo)/2,1.928);CUR.add(mirror);
+ // Round upholstered pouf with softly crowned seat, no angular frame.
+ const fabric=mt(0xd5cabe,{roughness:1}),topFabric=mt(0xe2d8cc,{roughness:1});
+ cy(cx,-1.53,.185,.025,.075,oakD);
+ const profile=[[0,.075],[.18,.075],[.211,.09],[.228,.13],[.235,.20],[.235,.34],[.229,.39],[.212,.435],[.17,.459],[.08,.468],[0,.47]].map(([r,h])=>new THREE.Vector2(r,h));
+ const puff=new THREE.Mesh(new THREE.LatheGeometry(profile,64),fabric);puff.position.set(cx,BASE,1.53);puff.castShadow=puff.receiveShadow=true;CUR.add(puff);
+ const seam=new THREE.Mesh(new THREE.TorusGeometry(.224,.002,8,64),fabric);seam.rotation.x=Math.PI/2;seam.position.set(cx,BASE+.397,1.53);CUR.add(seam);
+ g.userData.dimensions={consoleWidthMM:760,consoleDepthMM:265,consoleHeightMM:750,pierProjectionMM:150,mirrorBottomMM:179,poufDiameterMM:470,poufHeightMM:465};
+ CUR=oc;BASE=ob;
 }
 
 start();</script></body></html>
