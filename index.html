@@ -2412,4 +2412,26 @@ screen.userData={visualOnly:true,sectionMM:[150,30],slats:N,clearGapMM:((b-a-.03
  g.userData.note='Preliminary decorative radiator. Location, output, piping and required convection clearances require heating design; not approved engineering.';
 }
 
+// PRELIMINARY_FREE_WINDOW_RADIATORS_V1: interior study only, NOT a heating plan.
+// Four free positions checked against current furniture mesh bounds and wall triangles.
+// Existing BedroomRadiatorPreliminary is deliberately left unchanged.
+{
+ const paint=new THREE.MeshStandardMaterial({color:0xe5ded1,roughness:.38,metalness:.15});
+ const positions=[
+  {name:'GuestWindow6058RadiatorStudy',floor:F2,c:[-3.845,3.505,5.355968],w:1.0,h:.43,depth:.066},
+  {name:'DiningWindow4338RadiatorStudy',floor:F1,c:[5.775,.505,-.004032],w:.5,h:.43,depth:.066},
+  {name:'DiningWindow4393RadiatorStudy',floor:F1,c:[5.775,.505,.815968],w:.5,h:.43,depth:.066},
+  {name:'UpperHallWindow6432RadiatorStudy',floor:F2,c:[3.905,3.505,6.10],w:.5,h:.43,depth:.066}
+ ];
+ for(const e of positions){
+  const g=new THREE.Group();g.name=e.name;e.floor.add(g);
+  const tube=(a,b,r)=>{const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),d=B.clone().sub(A),o=new THREE.Mesh(new THREE.CylinderGeometry(r,r,d.length(),12),paint);o.position.copy(A.clone().add(B).multiplyScalar(.5));o.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());o.castShadow=o.receiveShadow=true;g.add(o);};
+  const [x,y,z]=e.c,lo=y-e.h/2+.023,hi=y+e.h/2-.023,L=z-e.w/2+.023,R=z+e.w/2-.023,N=Math.round((e.w-.046)/.05)+1;
+  for(let i=0;i<N;i++){const zi=L+(R-L)*i/(N-1);for(const xi of [x-.0165,x+.0165])tube([xi,lo,zi],[xi,hi,zi],.012);}
+  for(const yi of [lo,hi])tube([x,yi,L],[x,yi,R],.023);
+  g.userData.note='Preliminary interior position only. No heating output, piping, mounting, thermal or code clearances specified. Check with heating designer before implementation.';
+  g.userData.window=e.name.match(/\d+/)[0];
+ }
+}
+
 start();</script></body></html>
