@@ -2300,25 +2300,30 @@ screen.userData={visualOnly:true,sectionMM:[150,30],slats:N,clearGapMM:((b-a-.03
   const f=[0,2,1,0,3,2,4,5,6,4,6,7,0,1,5,0,5,4,1,2,6,1,6,5,2,3,7,2,7,6,3,0,4,3,4,7];
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(f.flatMap(i=>p[i]),3));geo.computeVertexNormals();const m=new THREE.Mesh(geo,mat);m.castShadow=m.receiveShadow=true;group.add(m);return m;
  }
+ // ALIGNED_WARDROBE_HORIZONS_V1
+ band(xf-.032,xf,z0,z1,top(z0)-.120,top(z1)-.120,top(z0),top(z1));
+ const commonHandle=floor+.90;
  for(let k=0;k<6;k++){
-  const a=z0+k*pitch+.004,b=z0+(k+1)*pitch-.004,lo=floor+.075,w=.062,T=z=>top(z)-.008;
+  const a=z0+k*pitch+.004,b=z0+(k+1)*pitch-.004,lo=floor+.075,w=.062,T=z=>top(z)-.124;
   prism(xf-.032,xf-.021,a,b,lo,T(a),T(b),inset);
   prism(xf-.032,xf,a,a+w,lo,T(a),T(a+w));prism(xf-.032,xf,b-w,b,lo,T(b-w),T(b));
   B(xf-.032,xf,lo,lo+w,a,b);
   band(xf-.032,xf,a,b,T(a)-w,T(b)-w,T(a),T(b));
-  const split=lo+(T(a)-lo)*.40;B(xf-.032,xf,split-.025,split+.025,a,b);
-  // Crisp stepped profiles: rectangular lower panel and trapezoidal upper panel.
+  const splits=[floor+.60];if(k>=2)splits.push(floor+1.40);if(k>=4)splits.push(floor+2.00);
+  for(const s of splits)B(xf-.032,xf,s-.025,s+.025,a,b);
   const ia=a+w+.009,ib=b-w-.009;
-  for(const [low,upper] of [[lo+w+.008,split-.034],[split+.034,null]]){
-   const hi=z=>upper===null?T(z)-w-.009:upper;
+  for(let j=0;j<=splits.length;j++){
+   const low=j===0?lo+w+.008:splits[j-1]+.034;
+   const hi=z=>j===splits.length?T(z)-w-.009:splits[j]-.034;
+   if(hi(ia)-low<.08)throw Error('Wardrobe panel too short');
    B(xf-.020,xf-.006,low,low+.012,ia,ib);
    band(xf-.020,xf-.006,ia,ib,hi(ia)-.012,hi(ib)-.012,hi(ia),hi(ib));
    prism(xf-.020,xf-.006,ia,ia+.012,low,hi(ia),hi(ia+.012));prism(xf-.020,xf-.006,ib-.012,ib,low,hi(ib-.012),hi(ib));
   }
-  const hz=k%2===0?b-.035:a+.035,hy=Math.min(lo+.91,split-.10);
-  B(xf,xf+.017,hy-.065,hy+.065,hz-.007,hz+.007,metal);
-  if(k===0)group.userData.firstSection='Upper panel fixed, continuous facade appearance; opening hardware undecided';
+  const hz=k%2===0?b-.035:a+.035;
+  B(xf,xf+.017,commonHandle-.065,commonHandle+.065,hz-.007,hz+.007,metal);
  }
+ group.userData.facadeStudy='Common horizontal rails600/1400/2000mm and handles900mm; continuous plain120mm sloped upper frieze; visual proposal, hardware and opening not certified.';
  // Thin sloped top panel, generated with the same measured roof plane.
  const p=[[x0,top(z0)-.018,z0],[xf,top(z0)-.018,z0],[xf,top(z1)-.018,z1],[x0,top(z1)-.018,z1]];
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute([0,1,2,0,2,3].flatMap(i=>p[i]),3));g.computeVertexNormals();const cap=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0xf1ece2,roughness:.58,side:THREE.DoubleSide}));group.add(cap);
@@ -2388,49 +2393,36 @@ screen.userData={visualOnly:true,sectionMM:[150,30],slats:N,clearGapMM:((b-a-.03
  const cloth=new THREE.MeshStandardMaterial({color:new THREE.Color(0xd3c5b0).convertSRGBToLinear(),roughness:.94,side:THREE.DoubleSide});
  const metal=new THREE.MeshStandardMaterial({color:0x8b7855,roughness:.46,metalness:.5});
  const z0=-1.19,z1=1.90,roof=z=>4.309067726+(6.252465725-4.309067726)/(2.233468056+1.421531916)*(z+1.421531916);
- const A=new THREE.Vector3(5.038,roof(z0)-.07,z0),B=new THREE.Vector3(5.038,roof(z1)-.07,z1),d=B.clone().sub(A);
+ const A=new THREE.Vector3(5.055,roof(z0)-.07,z0),B=new THREE.Vector3(5.055,roof(z1)-.07,z1),d=B.clone().sub(A);
  const rod=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,d.length(),16),metal);rod.position.copy(A.clone().add(B).multiplyScalar(.5));rod.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());g.add(rod);
  const p=[],uv=[],ix=[],N=160,K=28;
  for(let i=0;i<=N;i++)for(let j=0;j<=K;j++){
-  const u=i/N,v=j/K,z=z1-.52+.52*u,top=roof(z)-.09,drop=1.38+.14*Math.sin(Math.PI*u);
-  const fold=Math.sin(u*Math.PI*14+v*.35)*.025*(.45+.55*Math.sin(Math.PI*v*.7));
-  p.push(5.027+fold,top-drop*v,z+.02*Math.sin(Math.PI*v)*Math.sin(u*22));uv.push(u,v);
+  const u=i/N,v=j/K,z=z1-.52+.52*u,top=roof(z)-.09,drop=top-3.115;
+  const fold=Math.sin(u*Math.PI*14+v*.35)*.018*(.65+.35*Math.sin(Math.PI*v*.7));
+  const edgeClear=.075*(1-Math.min(1,Math.max(0,(z-1.62)/.05)))*Math.min(1,v*18);p.push(5.055-edgeClear+fold,top-drop*v,z+.02*Math.sin(Math.PI*v)*Math.sin(u*22));uv.push(u,v);
  }
  for(let i=0;i<N;i++)for(let j=0;j<K;j++){let a=i*(K+1)+j,b=a+K+1;ix.push(a,b,a+1,a+1,b,b+1);}
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(p,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(ix);geo.computeVertexNormals();
- const fabric=new THREE.Mesh(geo,cloth);fabric.castShadow=fabric.receiveShadow=true;g.add(fabric);
+ const fabric=new THREE.Mesh(geo,cloth);fabric.castShadow=true;fabric.receiveShadow=false;g.add(fabric);
  g.userData.note='Static fabric study gathered toward high corner; no working mechanism or animation asserted.';
 }
 
-// PRELIMINARY_BEDROOM_RADIATOR: visual placement only, heating plan unavailable.
+// ANTIQUE_CHARCOAL_RADIATORS_CONCEPT: decorative form only, no heating design.
 {
- const g=new THREE.Group();g.name='BedroomRadiatorPreliminary';F2.add(g);
- const m=new THREE.MeshStandardMaterial({color:0xe5ded1,roughness:.38,metalness:.15});
- const tube=(a,b,r)=>{const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),d=B.clone().sub(A);const o=new THREE.Mesh(new THREE.CylinderGeometry(r,r,d.length(),12),m);o.position.copy(A.clone().add(B).multiplyScalar(.5));o.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());o.castShadow=o.receiveShadow=true;g.add(o);};
- for(let i=0;i<25;i++){const z=.415968-.60+i*.05;for(const x of [5.012,5.045])tube([x,3.29,z],[x,3.68,z],.012);}
- for(const y of [3.29,3.68])tube([5.0285,y,-.196032],[5.0285,y,1.027968],.023);
- g.userData.note='Preliminary decorative radiator. Location, output, piping and required convection clearances require heating design; not approved engineering.';
-}
-
-// PRELIMINARY_FREE_WINDOW_RADIATORS_V1: interior study only, NOT a heating plan.
-// Four free positions checked against current furniture mesh bounds and wall triangles.
-// Existing BedroomRadiatorPreliminary is deliberately left unchanged.
-{
- const paint=new THREE.MeshStandardMaterial({color:0xe5ded1,roughness:.38,metalness:.15});
- const positions=[
-  {name:'GuestWindow6058RadiatorStudy',floor:F2,c:[-3.845,3.505,5.355968],w:1.0,h:.43,depth:.066},
-  {name:'DiningWindow4338RadiatorStudy',floor:F1,c:[5.775,.505,-.004032],w:.5,h:.43,depth:.066},
-  {name:'DiningWindow4393RadiatorStudy',floor:F1,c:[5.775,.505,.815968],w:.5,h:.43,depth:.066},
-  {name:'UpperHallWindow6432RadiatorStudy',floor:F2,c:[3.905,3.505,6.10],w:.5,h:.43,depth:.066}
- ];
- for(const e of positions){
-  const g=new THREE.Group();g.name=e.name;e.floor.add(g);
-  const tube=(a,b,r)=>{const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),d=B.clone().sub(A),o=new THREE.Mesh(new THREE.CylinderGeometry(r,r,d.length(),12),paint);o.position.copy(A.clone().add(B).multiplyScalar(.5));o.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());o.castShadow=o.receiveShadow=true;g.add(o);};
-  const [x,y,z]=e.c,lo=y-e.h/2+.023,hi=y+e.h/2-.023,L=z-e.w/2+.023,R=z+e.w/2-.023,N=Math.round((e.w-.046)/.05)+1;
-  for(let i=0;i<N;i++){const zi=L+(R-L)*i/(N-1);for(const xi of [x-.0165,x+.0165])tube([xi,lo,zi],[xi,hi,zi],.012);}
-  for(const yi of [lo,hi])tube([x,yi,L],[x,yi,R],.023);
-  g.userData.note='Preliminary interior position only. No heating output, piping, mounting, thermal or code clearances specified. Check with heating designer before implementation.';
-  g.userData.window=e.name.match(/\d+/)[0];
+ const iron=new THREE.MeshStandardMaterial({color:new THREE.Color(0x474b4a).convertSRGBToLinear(),roughness:.44,metalness:.3});
+ const ringmat=new THREE.MeshStandardMaterial({color:new THREE.Color(0x505452).convertSRGBToLinear(),roughness:.4,metalness:.38});
+ const defs=[['BedroomRadiatorPreliminary',F2,5.0285,3.485,.415968,1.224,.436],['GuestWindow6058RadiatorStudy',F2,-3.845,3.505,5.355968,.978,.43],['DiningWindow4338RadiatorStudy',F1,5.775,.505,-.004032,.478,.43],['DiningWindow4393RadiatorStudy',F1,5.775,.505,.815968,.478,.43],['UpperHallWindow6432RadiatorStudy',F2,3.905,3.505,6.10,.478,.43]];
+ for(const [name,floor,x,y,z,w,h] of defs){
+ const g=new THREE.Group();g.name=name;floor.add(g);
+ const tube=(a,b,r,mat=iron)=>{const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),d=B.clone().sub(A);const o=new THREE.Mesh(new THREE.CylinderGeometry(r,r,d.length(),16),mat);o.position.copy(A.clone().add(B).multiplyScalar(.5));o.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());g.add(o);return o;};
+ const low=y-h/2,high=y+h/2,N=Math.max(6,Math.round(w/.057)),L=z-w/2+.027,R=z+w/2-.027;
+ const prof=[[0,0],[.013,0],[.021,.013],[.022,.035],[.017,.055],[.014,.085],[.014,h-.085],[.017,h-.055],[.022,h-.035],[.021,h-.013],[.013,h],[0,h]].map(p=>new THREE.Vector2(...p));
+ const geo=new THREE.LatheGeometry(prof,20);
+ for(let i=0;i<N;i++){const zi=L+(R-L)*i/(N-1);for(const xi of [x-.014,x+.014]){const o=new THREE.Mesh(geo,iron);o.position.set(xi,low,zi);o.castShadow=o.receiveShadow=true;g.add(o);for(const yy of [low+.06,high-.06]){const ring=new THREE.Mesh(new THREE.TorusGeometry(.017,.0025,6,16),ringmat);ring.rotation.x=Math.PI/2;ring.position.set(xi,yy,zi);g.add(ring);}}}
+ for(const yy of [low+.026,high-.026])tube([x,yy,L],[x,yy,R],.019);
+ // Small rounded cast end caps and relief beads; no invented pipe route.
+ for(const zi of [L,R])for(const yy of [low+.026,high-.026]){const o=new THREE.Mesh(new THREE.SphereGeometry(.021,16,10),iron);o.position.set(x,yy,zi);g.add(o);}
+ g.userData.note='Antique-style charcoal radiator interior concept. Output, fixing, piping and thermal clearances unverified.';
  }
 }
 
